@@ -8,13 +8,16 @@ public class Plate extends Button {
     private ArrayList<Plate> neighbors;
     private boolean hasBomb;
     private int numOfBombs;
+    private boolean isFlagged;
 
     public Plate() {
         this.neighbors = new ArrayList<>();
         this.hasBomb = hasBomb;
         this.numOfBombs = numOfBombs;
+        this.isFlagged = isFlagged;
 
     }
+
 
 
     public void addNeighbors(Plate p) {
@@ -35,6 +38,18 @@ public class Plate extends Button {
 
     public boolean HasBomb() {
         return hasBomb;
+    }
+
+    public boolean isFlagged() {
+        return  isFlagged;
+    }
+
+    public void setFlagged(){
+        this.isFlagged = true;
+    }
+
+    public void setUnflagged(){
+        this.isFlagged = false;
     }
 
     public boolean isHasBomb() {

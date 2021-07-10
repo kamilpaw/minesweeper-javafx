@@ -24,6 +24,7 @@ public class Minesweeper extends Application {
     boolean endGame;
     Label count;
     Label flag;
+    Label bombsfound;
 
     public void start(Stage stage) {
         BorderPane bp = new BorderPane();
@@ -33,7 +34,8 @@ public class Minesweeper extends Application {
         HBox hBox = new HBox();
         count = new Label("Moves: " + counter);
         flag = new Label("Flags: " + flags);
-        hBox.getChildren().addAll(count, flag);
+        bombsfound = new Label("Bombs detected: " + bombDetected);
+        hBox.getChildren().addAll(count, flag, bombsfound);
         hBox.setSpacing(30);
         bp.setBottom(hBox);
 
@@ -63,10 +65,11 @@ public class Minesweeper extends Application {
     }
 
     public void onPlateClicked(MouseEvent event, List<Plate> plates, Plate plate) {
-            counter++;
-            count.setText("Moves: " + counter);
+        counter++;
+        count.setText("Moves: " + counter);
 
-            if (event.getButton()== MouseButton.PRIMARY) {
+        if (event.getButton() == MouseButton.PRIMARY) {
+            if (!plate.isFlagged()) {
                 if (plate.HasBomb()) {
                     endGame = true;
                     for (Plate p : plates) {
@@ -83,18 +86,33 @@ public class Minesweeper extends Application {
                     plate.setText(String.valueOf(plate.getNumOfBombs()));
                 }
             }
-            if (event.getButton() == MouseButton.SECONDARY) {
-                if (plate.getText().isEmpty()) {
+        }
+        if (event.getButton() == MouseButton.SECONDARY) {
+            System.out.println(plate.getText());
+            System.out.println(plate.isFlagged());
+            if (plate.isFlagged() == true) {
+                plate.setText("");
+                plate.setUnflagged();
+                flags++;
+                flag.setText("Flags: " + flags);
+                if (plate.HasBomb()) {
+                    bombDetected--;
+                    bombsfound.setText("Bombs detected: " + bombDetected);
+                }
+            } else if (plate.getText().isEmpty() && plate.isFlagged() == false) {
+                if (flags > 0) {
                     plate.setText("F");
+                    plate.setFlagged();
                     flags--;
-                    flag.setText("Flags: "+ flags);
+                    flag.setText("Flags: " + flags);
                     if (plate.HasBomb()) {
                         bombDetected++;
+                        bombsfound.setText("Bombs detected: " + bombDetected);
                     }
                 }
             }
         }
-
+    }
 
 
     public void addNumbers(List<Plate> plates) {
