@@ -1,0 +1,9 @@
+package minesweaper;
+
+import static javafx.application.Application.launch;
+
+public class Main {
+    public static void main(String[] args) {
+        launch(Minesweeper.class);
+    }
+}
