@@ -1,22 +1,17 @@
 package minesweaper;
-
 import javafx.scene.control.Button;
-
 import java.util.ArrayList;
 
+
 public class Plate extends Button {
-    private ArrayList<Plate> neighbors;
+    private final ArrayList<Plate> neighbors;
     private boolean hasBomb;
     private int numOfBombs;
     private boolean isFlagged;
 
     public Plate() {
         this.neighbors = new ArrayList<>();
-        this.hasBomb = hasBomb;
-        this.numOfBombs = numOfBombs;
-        this.isFlagged = isFlagged;
     }
-
 
     public void addNeighbors(Plate p) {
         this.neighbors.add(p);
@@ -50,13 +45,7 @@ public class Plate extends Button {
         this.isFlagged = false;
     }
 
-    public boolean isHasBomb() {
-        return hasBomb;
-    }
-
     public void setHasBomb(boolean hasBomb) {
         this.hasBomb = hasBomb;
     }
-
-
 }
