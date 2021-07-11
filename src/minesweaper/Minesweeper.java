@@ -2,12 +2,15 @@ package minesweaper;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
+import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -16,19 +19,28 @@ import java.util.Random;
 
 public class Minesweeper extends Application {
 
+    private TilePane tp;
+    private int counter;
+    private int flags = 10;
+    private int bombDetected;
+    private Label count;
+    private Label flag;
+    private Label bombsfound;
 
-    TilePane tp;
-    int counter;
-    int flags = 10;
-    int bombDetected;
-    boolean endGame;
-    Label count;
-    Label flag;
-    Label bombsfound;
+
+    public Minesweeper() {
+        this.tp = tp;
+        this.counter = counter;
+        this.flags = flags;
+        this.bombDetected = bombDetected;
+        this.count = count;
+        this.flag = flag;
+        this.bombsfound = bombsfound;
+    }
 
     public void start(Stage stage) {
         BorderPane bp = new BorderPane();
-        TilePane tp = createTilePane();
+        TilePane tp = createTilePane(stage);
         tp.setPrefSize(500, 500);
 
         HBox hBox = new HBox();
@@ -42,18 +54,20 @@ public class Minesweeper extends Application {
         bp.setCenter(tp);
         Scene scene = new Scene(bp);
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
+
     }
 
 
-    public TilePane createTilePane() {
+    public TilePane createTilePane(Stage stage) {
         tp = new TilePane();
         List<Plate> plates = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             Plate plate = new Plate();
             plate.setPrefSize(50, 50);
             plate.setOnMouseClicked((event -> {
-                onPlateClicked(event, plates, plate);
+                onPlateClicked(stage, event, plates, plate);
             }));
             tp.getChildren().add(plate);
             plates.add(plate);
@@ -64,19 +78,19 @@ public class Minesweeper extends Application {
         return tp;
     }
 
-    public void onPlateClicked(MouseEvent event, List<Plate> plates, Plate plate) {
+    public void onPlateClicked(Stage stage, MouseEvent event, List<Plate> plates, Plate plate) {
         counter++;
         count.setText("Moves: " + counter);
 
         if (event.getButton() == MouseButton.PRIMARY) {
             if (!plate.isFlagged()) {
                 if (plate.HasBomb()) {
-                    endGame = true;
                     for (Plate p : plates) {
                         if (p.HasBomb()) {
                             p.setText("BB");
                         }
                     }
+                    lose(stage);
                 } else if (plate.getNumOfBombs() == 0) {
                     plate.setText("0");
                     for (Plate pl : plate.getNeighbors()) {
@@ -90,7 +104,7 @@ public class Minesweeper extends Application {
         if (event.getButton() == MouseButton.SECONDARY) {
             System.out.println(plate.getText());
             System.out.println(plate.isFlagged());
-            if (plate.isFlagged() == true) {
+            if (plate.isFlagged()) {
                 plate.setText("");
                 plate.setUnflagged();
                 flags++;
@@ -99,7 +113,7 @@ public class Minesweeper extends Application {
                     bombDetected--;
                     bombsfound.setText("Bombs detected: " + bombDetected);
                 }
-            } else if (plate.getText().isEmpty() && plate.isFlagged() == false) {
+            } else if (plate.getText().isEmpty() && !plate.isFlagged()) {
                 if (flags > 0) {
                     plate.setText("F");
                     plate.setFlagged();
@@ -108,6 +122,9 @@ public class Minesweeper extends Application {
                     if (plate.HasBomb()) {
                         bombDetected++;
                         bombsfound.setText("Bombs detected: " + bombDetected);
+                        if (bombDetected == 10) {
+                            win(stage);
+                        }
                     }
                 }
             }
@@ -149,7 +166,6 @@ public class Minesweeper extends Application {
         }
     }
 
-
     public void addBombs(List<Plate> plates) {
         Random random = new Random();
         for (int i = 0; i < 10; i++) {
@@ -160,6 +176,45 @@ public class Minesweeper extends Application {
             }
             plates.get(randomIndex).setHasBomb(true);
         }
+    }
 
+    public void win(Stage stage) {
+        final Stage winStage = new Stage();
+        winStage.setResizable(false);
+        winStage.setTitle("ALL BOMBS FOUND!");
+        winStage.initModality(Modality.APPLICATION_MODAL);
+        winStage.initOwner(stage);
+        Label message = new Label("YOU WIN :) \nBombs found: " + bombDetected + "/10\nMoves: " + counter);
+        message.setFont(new Font(20));
+        Button tryAgain = new Button("TRY AGAIN!");
+        BorderPane loosebp = new BorderPane();
+        loosebp.setTop(message);
+        loosebp.setCenter(tryAgain);
+        Scene looseScene = new Scene(loosebp, 300, 200);
+        winStage.setScene(looseScene);
+        winStage.show();
+
+    }
+
+    public void lose(Stage stage) {
+        Stage loseStage = new Stage();
+        loseStage.setResizable(false);
+        loseStage.setTitle("BOMB EXPLODED");
+        loseStage.initModality(Modality.APPLICATION_MODAL);
+        loseStage.initOwner(stage);
+        Label message = new Label("Bomb exploded :( \nBombs found: " + bombDetected + "/10\nMoves: " + counter);
+        message.setFont(new Font(20));
+        Button tryAgain = new Button("TRY AGAIN!");
+        BorderPane losebp = new BorderPane();
+        losebp.setTop(message);
+        losebp.setCenter(tryAgain);
+        Scene loseScene = new Scene(losebp, 300, 200);
+        loseStage.setScene(loseScene);
+        loseStage.show();
+        tryAgain.setOnAction((event -> {
+            loseStage.close();
+            stage.close();
+            this.start(stage);
+        }));
     }
 }

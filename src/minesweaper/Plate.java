@@ -15,9 +15,7 @@ public class Plate extends Button {
         this.hasBomb = hasBomb;
         this.numOfBombs = numOfBombs;
         this.isFlagged = isFlagged;
-
     }
-
 
 
     public void addNeighbors(Plate p) {
