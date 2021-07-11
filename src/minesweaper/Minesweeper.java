@@ -27,7 +27,6 @@ public class Minesweeper extends Application {
     private Label bombsLabel;
 
 
-
     public void start(Stage stage) {
         BorderPane bp = new BorderPane();
         TilePane tp = createTilePane(stage);
@@ -75,22 +74,24 @@ public class Minesweeper extends Application {
                 if (plate.HasBomb()) {
                     for (Plate p : plates) {
                         if (p.HasBomb()) {
-                            p.setText("BB");
+                            p.setText("BOMB");
                         }
                     }
                     lose(stage);
                 } else if (plate.getNumOfBombs() == 0) {
                     plate.setText("0");
                     for (Plate pl : plate.getNeighbors()) {
-                        pl.setText(String.valueOf(pl.getNumOfBombs()));
+                        if (!pl.isFlagged()) {
+                            pl.setText(String.valueOf(pl.getNumOfBombs()));
+                        }
                     }
                 } else {
                     plate.setText(String.valueOf(plate.getNumOfBombs()));
                 }
             }
         }
-        if (event.getButton() == MouseButton.SECONDARY) {
 
+        if (event.getButton() == MouseButton.SECONDARY) {
             if (plate.isFlagged()) {
                 plate.setText("");
                 plate.setUnflagged();
@@ -102,7 +103,7 @@ public class Minesweeper extends Application {
                 }
             } else if (plate.getText().isEmpty() && !plate.isFlagged()) {
                 if (flags > 0) {
-                    plate.setText("F");
+                    plate.setText("FLAG");
                     plate.setFlagged();
                     flags--;
                     flagsLabel.setText("Flags: " + flags);
@@ -171,7 +172,7 @@ public class Minesweeper extends Application {
         winStage.setTitle("ALL BOMBS FOUND!");
         winStage.initModality(Modality.APPLICATION_MODAL);
         winStage.initOwner(stage);
-        Label message = new Label("YOU WIN :) \nBombs found: " + bombsFound + "/10\nMoves: " + moves);
+        Label message = new Label("YOU WIN :) \n\nBombs found: " + bombsFound + "/10\nMoves: " + moves);
         message.setFont(new Font(20));
         Button tryAgain = new Button("TRY AGAIN!");
         BorderPane losebp = new BorderPane();
@@ -183,6 +184,9 @@ public class Minesweeper extends Application {
         tryAgain.setOnAction((event -> {
             winStage.close();
             stage.close();
+            moves = 0;
+            flags = 10;
+            bombsFound = 0;
             this.start(stage);
         }));
     }
@@ -193,7 +197,7 @@ public class Minesweeper extends Application {
         loseStage.setTitle("BOMB EXPLODED");
         loseStage.initModality(Modality.APPLICATION_MODAL);
         loseStage.initOwner(stage);
-        Label message = new Label("Bomb exploded :( \nBombs found: " + bombsFound + "/10\nMoves: " + moves);
+        Label message = new Label("Bomb exploded :( \n\nBombs found: " + bombsFound + "/10\nMoves: " + moves);
         message.setFont(new Font(20));
         Button tryAgain = new Button("TRY AGAIN!");
         BorderPane losebp = new BorderPane();
@@ -205,6 +209,9 @@ public class Minesweeper extends Application {
         tryAgain.setOnAction((event -> {
             loseStage.close();
             stage.close();
+            moves = 0;
+            flags = 10;
+            bombsFound = 0;
             this.start(stage);
         }));
     }

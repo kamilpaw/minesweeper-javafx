@@ -1,5 +1,7 @@
 package minesweaper;
+
 import javafx.scene.control.Button;
+
 import java.util.ArrayList;
 
 
@@ -34,14 +36,14 @@ public class Plate extends Button {
     }
 
     public boolean isFlagged() {
-        return  isFlagged;
+        return isFlagged;
     }
 
-    public void setFlagged(){
+    public void setFlagged() {
         this.isFlagged = true;
     }
 
-    public void setUnflagged(){
+    public void setUnflagged() {
         this.isFlagged = false;
     }
 
